@@ -1,6 +1,7 @@
 package com.example.android.data;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.example.android.data.model.DataItem;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 
@@ -38,7 +41,26 @@ public class DataItemAdapter extends ArrayAdapter<DataItem> {
 
         DataItem item = mDataItems.get(position);
         textView.setText(item.getItemName());
-        imageView.setImageResource(R.drawable.apple_pie);
+//        imageView.setImageResource(R.drawable.apple_pie);
+
+        InputStream stream = null;
+        try {
+            String imageName = item.getImage();
+            stream = getContext().getAssets().open(imageName);
+            Drawable d = Drawable.createFromStream(stream, null);
+            imageView.setImageDrawable(d);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stream!=null) {
+                    stream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         return convertView;
     }
