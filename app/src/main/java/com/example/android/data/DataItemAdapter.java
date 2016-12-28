@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.data.model.DataItem;
 
@@ -35,7 +36,7 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(DataItemAdapter.ViewHolder holder, int position) {
-        DataItem item = mItems.get(position);
+        final DataItem item = mItems.get(position);
 
         try {
             holder.tvName.setText(item.getItemName());
@@ -46,6 +47,14 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // This is the place to add event listeners
+        holder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "You selected "+item.getItemName(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -57,9 +66,10 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
 
         public TextView tvName;
         public ImageView imageView;
+        public View mView;
         public ViewHolder(View itemView) {
             super(itemView);
-
+            mView = itemView;
             tvName = (TextView) itemView.findViewById(R.id.itemNameText);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
         }
