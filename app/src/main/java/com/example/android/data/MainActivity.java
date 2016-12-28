@@ -2,7 +2,7 @@ package com.example.android.data;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ListView;
+import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.example.android.data.model.DataItem;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static android.R.id.list;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
             DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
 
-            ListView listView = (ListView) findViewById(list);
-            listView.setAdapter(adapter);
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcView);
+            recyclerView.setAdapter(adapter);
 
         }
 }
