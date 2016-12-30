@@ -17,21 +17,21 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android.data.database.DataSource;
-import com.example.android.data.model.DataItem;
 import com.example.android.data.model.SampleDataProvider;
+import com.example.android.data.model.TripItem;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<DataItem> dataItemList = SampleDataProvider.sDataItemList;
+    List<TripItem> tripList = SampleDataProvider.sTripList;
     DataSource mDataSource;
-    List<DataItem> listFromDB;
+    List<TripItem> listFromDB;
     DrawerLayout mDrawerLayout;
     ListView mDrawerList;
     String[] mCategories;
     RecyclerView mRecyclerView;
-    DataItemAdapter mItemAdapter;
+    DataItemAdapter mDataTripAdapter;
 
 
         @Override
@@ -52,14 +52,14 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "You selected "+category, Toast.LENGTH_SHORT).show();
                     mDrawerLayout.closeDrawer(mDrawerList);
 
-                    displayDataItems(category);
+                    displayTrips(category);
                 }
             });
 
 
             mDataSource = new DataSource(this);
             mDataSource.open();
-            mDataSource.seedDataBase(dataItemList);
+            mDataSource.seedDataBase(tripList);
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
             boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
@@ -70,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            displayDataItems(null);
+            displayTrips(null);
 
         }
 
-    private void displayDataItems(String category) {
-        listFromDB = mDataSource.getAllItems(category);
-        mItemAdapter = new DataItemAdapter(this, listFromDB);
-        mRecyclerView.setAdapter(mItemAdapter);
+    private void displayTrips(String category) {
+        listFromDB = mDataSource.getAllTrips(category);
+        mDataTripAdapter = new DataItemAdapter(this, listFromDB);
+        mRecyclerView.setAdapter(mDataTripAdapter);
     }
 
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_all_items:
                 // display all items
-                displayDataItems(null);
+                displayTrips(null);
                 return true;
 
             case R.id.action_choose_category:
