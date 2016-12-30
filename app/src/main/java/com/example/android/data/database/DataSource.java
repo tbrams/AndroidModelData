@@ -62,10 +62,16 @@ public class DataSource {
 
     }
 
-    public List<DataItem> getAllItems(){
+    public List<DataItem> getAllItems(String category){
         List<DataItem> dataItems = new ArrayList<>();
+        Cursor cursor;
 
-        Cursor cursor = mDatabase.query(ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS, null,null,null,null,ItemsTable.COLUMN_NAME);
+        if (category==null) {
+            cursor = mDatabase.query(ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS, null,null,null,null,ItemsTable.COLUMN_NAME);
+        } else {
+            String[] categories = {category};
+            cursor = mDatabase.query(ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS, ItemsTable.COLUMN_CATEGORY+"=?",categories,null,null,ItemsTable.COLUMN_NAME);
+        }
         while (cursor.moveToNext()) {
             DataItem item = new DataItem();
             item.setItemId(cursor.getString(
