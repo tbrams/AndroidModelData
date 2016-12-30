@@ -65,7 +65,7 @@ public class DataSource {
     public List<DataItem> getAllItems(){
         List<DataItem> dataItems = new ArrayList<>();
 
-        Cursor cursor = mDatabase.query(ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS, null,null,null,null,null);
+        Cursor cursor = mDatabase.query(ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS, null,null,null,null,ItemsTable.COLUMN_NAME);
         while (cursor.moveToNext()) {
             DataItem item = new DataItem();
             item.setItemId(cursor.getString(
@@ -84,6 +84,7 @@ public class DataSource {
                     cursor.getColumnIndex(ItemsTable.COLUMN_IMAGE)));
             dataItems.add(item);
         }
+        cursor.close();
 
         return dataItems;
     }
