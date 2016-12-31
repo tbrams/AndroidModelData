@@ -11,6 +11,8 @@ import java.util.UUID;
 public class WpItem implements Parcelable {
     private String wpId;
     private String wpName;
+    private Double wpLat;
+    private Double wpLon;
     private Double wpDistance;
     private String wpAltitude;
     private String tripIndex;
@@ -20,12 +22,14 @@ public class WpItem implements Parcelable {
     public WpItem() {
     }
 
-    public WpItem(String wpId, String wpName, Double wpDistance, String wpAltitude, String tripIndex, String wpSequenceNumber) {
+    public WpItem(String wpId, String wpName, Double lat, Double lon, Double wpDistance, String wpAltitude, String tripIndex, String wpSequenceNumber) {
         if (wpId == null) {
             wpId= UUID.randomUUID().toString();
         }
         this.wpId = wpId;
         this.wpName = wpName;
+        this.wpLat = lat;
+        this.wpLon = lon;
         this.wpDistance = wpDistance;
         this.wpAltitude = wpAltitude;
         this.tripIndex = tripIndex;
@@ -46,6 +50,22 @@ public class WpItem implements Parcelable {
 
     public void setWpName(String wpName) {
         this.wpName = wpName;
+    }
+
+    public Double getWpLat() {
+        return wpLat;
+    }
+
+    public void setWpLat(Double wpLat) {
+        this.wpLat = wpLat;
+    }
+
+    public Double getWpLon() {
+        return wpLon;
+    }
+
+    public void setWpLon(Double wpLon) {
+        this.wpLon = wpLon;
     }
 
     public Double getWpDistance() {
@@ -85,6 +105,8 @@ public class WpItem implements Parcelable {
 
         values.put(WpTable.COLUMN_ID, wpId);
         values.put(WpTable.COLUMN_NAME, wpName);
+        values.put(WpTable.COLUMN_LAT, wpLat);
+        values.put(WpTable.COLUMN_LON, wpLon);
         values.put(WpTable.COLUMN_ALT, wpAltitude);
         values.put(WpTable.COLUMN_DIST, wpDistance);
         values.put(WpTable.COLUMN_TRIP_ID, tripIndex);
@@ -98,13 +120,14 @@ public class WpItem implements Parcelable {
         return "WpItem{" +
                 "wpId='" + wpId + '\'' +
                 ", wpName='" + wpName + '\'' +
+                ", wpLat=" + wpLat +
+                ", wpLon=" + wpLon +
                 ", wpDistance=" + wpDistance +
                 ", wpAltitude='" + wpAltitude + '\'' +
                 ", tripIndex='" + tripIndex + '\'' +
                 ", wpSequenceNumber='" + wpSequenceNumber + '\'' +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
@@ -115,6 +138,8 @@ public class WpItem implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.wpId);
         dest.writeString(this.wpName);
+        dest.writeValue(this.wpLat);
+        dest.writeValue(this.wpLon);
         dest.writeValue(this.wpDistance);
         dest.writeString(this.wpAltitude);
         dest.writeString(this.tripIndex);
@@ -124,6 +149,8 @@ public class WpItem implements Parcelable {
     protected WpItem(Parcel in) {
         this.wpId = in.readString();
         this.wpName = in.readString();
+        this.wpLat = (Double) in.readValue(Double.class.getClassLoader());
+        this.wpLon = (Double) in.readValue(Double.class.getClassLoader());
         this.wpDistance = (Double) in.readValue(Double.class.getClassLoader());
         this.wpAltitude = in.readString();
         this.tripIndex = in.readString();

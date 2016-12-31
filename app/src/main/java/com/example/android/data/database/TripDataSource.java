@@ -63,13 +63,11 @@ public class TripDataSource {
 
 
     public void seedTripTable(List<TripItem> tripList) {
-        Log.d("TBR:", "seedTripTable...");
         long numDataItems = getTripCount();
         if (numDataItems==0) {
             for (TripItem trip :
                     tripList) {
                 try {
-                    Log.d("TBR:", "Creating Trip..."+trip.getTripId());
                     createTrip(trip);
                 } catch (SQLiteException e) {
                     e.printStackTrace();
@@ -95,9 +93,6 @@ public class TripDataSource {
 
         while (cursor.moveToNext()) {
             TripItem trip = new TripItem();
-            Log.d("TBR:", "cursor.getColumnIndex(TripTable.COLUMN_ID): "+
-                    cursor.getString(cursor.getColumnIndex(TripTable.COLUMN_ID)));
-
             trip.setTripId(cursor.getString(
                     cursor.getColumnIndex(TripTable.COLUMN_ID)));
             trip.setTripName(cursor.getString(
