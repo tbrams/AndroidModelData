@@ -16,25 +16,29 @@ import com.example.android.data.model.WpItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TripDataSource {
+public class DataSource {
 
     private Context mContext;
-    private SQLiteDatabase mDatabase;
+    private SQLiteDatabase mDb;
     private SQLiteOpenHelper mDbOpenHelper;
 
 
-    public TripDataSource(Context context) {
+    /*
+     * Generic Database functionality
+     * Constructor, open and close methods
+     */
+    public DataSource(Context context) {
         mContext = context;
         mDbOpenHelper = new DBhelper(context);
-        mDatabase = mDbOpenHelper.getWritableDatabase();
+        mDb = mDbOpenHelper.getWritableDatabase();
 
-        Log.d("TBR:", "TripDataSource constructor");
+        Log.d("TBR:", "DataSource constructor");
     }
 
 
 
     public void open() {
-        mDatabase = mDbOpenHelper.getWritableDatabase();
+        mDb = mDbOpenHelper.getWritableDatabase();
     }
 
 
@@ -43,25 +47,55 @@ public class TripDataSource {
     }
 
 
+    //
+    //Trip Table specifics
+    // --------------------
+
+
     /*
-     * Trip Table specifics
+     * createTrip
+     * This is the function responsible for inserting data into the Trips Table. Will be returning
+     * the same object in case we need to check if something has been changed.
+     *
+     * @Args: Trip Object
+     *
+     * @Return: Trip object
+     *
      */
 
     public TripItem createTrip(TripItem trip) {
         ContentValues values = trip.toValues();
 
-        mDatabase.insert(TripTable.TABLE_TRIPS, null, values);
+        mDb.insert(TripTable.TABLE_TRIPS, null, values);
         return trip;
     }
 
 
 
+    /*
+     * getTripCount
+     * Return the number of rows in the Trip Table
+     *
+     * @Args: None
+     *
+     * @Return: long
+     *
+     */
     public long getTripCount() {
-        return DatabaseUtils.queryNumEntries(mDatabase, TripTable.TABLE_TRIPS);
+        return DatabaseUtils.queryNumEntries(mDb, TripTable.TABLE_TRIPS);
     }
 
 
 
+    /*
+     * seedTripTable
+     * Insert all Trip objects into the trip table in the database
+     *
+     * @Args: List of Trip objects
+     *
+     * @Return: none
+     *
+     */
     public void seedTripTable(List<TripItem> tripList) {
         long numDataItems = getTripCount();
         if (numDataItems==0) {
@@ -78,16 +112,26 @@ public class TripDataSource {
     }
 
 
-
+    /*
+     * getAllTrips
+     * Lookup matching records in the database and for each create a matching object and return
+     * a list with all of these as the result.
+     *
+     * @Args: category, a filter - if this is null all rows are returned from db, otherwise only
+     *                  Trips with a date string matching the filter is returned.
+     *
+     * @Return: A list of trip objects
+     *
+     */
     public List<TripItem> getAllTrips(String category){
         List<TripItem> trips = new ArrayList<>();
         Cursor cursor;
 
         if (category==null) {
-            cursor = mDatabase.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, null,null,null,null,TripTable.COLUMN_DATE);
+            cursor = mDb.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, null,null,null,null,TripTable.COLUMN_DATE);
         } else {
             String[] categories = {category};
-            cursor = mDatabase.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, TripTable.COLUMN_DATE+"=?",categories,null,null,TripTable.COLUMN_NAME);
+            cursor = mDb.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, TripTable.COLUMN_DATE+"=?",categories,null,null,TripTable.COLUMN_NAME);
         }
 
 
@@ -109,34 +153,59 @@ public class TripDataSource {
     }
 
 
-    /*
-     * WP Table specifics
-     */
+    //
+    // WP Table specifics
+    // --------------------
 
+    /*
+     * createWp
+     * This is the function responsible for inserting data into the WayPoint Table. Will be returning
+     * the same object in case we need to check if something has been changed.
+     *
+     * @Args: WP Object
+     *
+     * @Return: WP object
+     *
+     */
     public WpItem createWp(WpItem wp) {
         ContentValues values = wp.toValues();
 
-        mDatabase.insert(WpTable.TABLE_WPS, null, values);
+        mDb.insert(WpTable.TABLE_WPS, null, values);
         return wp;
     }
 
 
 
+    /*
+      * getWpCount
+      * Return the number of rows in the WayPoint Table
+      *
+      * @Args: None
+      *
+      * @Return: long
+      *
+      */
     public long getWpCount() {
-        return DatabaseUtils.queryNumEntries(mDatabase, WpTable.TABLE_WPS);
+        return DatabaseUtils.queryNumEntries(mDb, WpTable.TABLE_WPS);
     }
 
 
-
+    /*
+     * seedWpTable
+     * Insert all Wp objects into the WayPoint table in the database
+     *
+     * @Args: List of WP objects
+     *
+     * @Return: none
+     *
+     */
     public void seedWpTable(List<WpItem> wpList) {
         long numDataItems = getWpCount();
-        Log.d("TBR:", "seedWpTable with numDataItems: "+numDataItems);
 
         if (numDataItems==0) {
             for (WpItem wp :
                     wpList) {
                 try {
-                    Log.d("TBR:", "creating wp "+wp.getWpName());
                     createWp(wp);
                 } catch (SQLiteException e) {
                     e.printStackTrace();
@@ -147,19 +216,27 @@ public class TripDataSource {
     }
 
 
-
+    /*
+     * getAllWps
+     * Lookup matching records in the database and for each create a matching object and return
+     * a list with all of these as the result.
+     *
+     * @Args: id,   a filter - if this is null all rows are returned from db, otherwise only
+     *              Way Points with a matching ID is returned.
+     *
+     * @Return: A list of WP objects
+     *
+     */
     public List<WpItem> getAllWps(String id){
         List<WpItem> wps = new ArrayList<>();
         Cursor cursor;
 
         if (id==null) {
-            cursor = mDatabase.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_NAME);
         } else {
             String[] fields = {id};
-            cursor = mDatabase.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_NAME);
         }
-
-        Log.d("TBR:", "in getAllWps");
 
         while (cursor.moveToNext()) {
             WpItem wp = new WpItem();

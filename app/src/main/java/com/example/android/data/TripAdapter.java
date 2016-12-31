@@ -2,9 +2,7 @@ package com.example.android.data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,12 +30,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
     @Override
     public TripAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean grid = settings.getBoolean(mContext.getString(R.string.pref_display_grid), false);
-        int layoutId = grid? R.layout.grid_item : R.layout.list_element;
-
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View itemView = inflater.inflate(layoutId, parent, false);
+        View itemView = inflater.inflate(R.layout.list_element, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemView);
         return viewHolder;
     }

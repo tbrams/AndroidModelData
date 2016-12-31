@@ -27,4 +27,5 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(WpTable.SQL_DELETE);
         onCreate(db);
     }
+
 }

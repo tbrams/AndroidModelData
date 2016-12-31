@@ -60,8 +60,8 @@ public class SampleWpDataProvider {
         addItem(new WpItem(null, "TNO VOR", 55.77, 11.44, 7.4,"1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "4"));
         addItem(new WpItem(null, "Tølløse", 55.61, 11.76, 14.6,"1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "5"));
         addItem(new WpItem(null, "Bjæverskov", 55.46, 12.03, 13.,"1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "6"));
-        addItem(new WpItem(null, "Køge", 55.48, 12.14, 4.0, "1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "6"));
-        addItem(new WpItem(null, "EKRK",  55.58, 12.13, 8.2,"1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "7"));
+        addItem(new WpItem(null, "Køge", 55.48, 12.14, 4.0, "1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "7"));
+        addItem(new WpItem(null, "EKRK",  55.58, 12.13, 8.2,"1200", "472bd675-3dfb-4017-80be-410b3a09fa6e", "8"));
 
         addItem(new WpItem(null, "EKRK", 55.59, 12.13, null,"1200", "1df276de-454b-463d-9be5-780869f4503c", "1"));
         addItem(new WpItem(null, "St Valby", 55.69, 12.14, 6.6,"1200", "1df276de-454b-463d-9be5-780869f4503c", "2"));

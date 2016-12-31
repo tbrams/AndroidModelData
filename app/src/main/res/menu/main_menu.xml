@@ -4,11 +4,11 @@
     <item
         android:id="@+id/action_settings"
         android:title="@string/settings"
-        app:showAsAction="ifRoom" />
-    <item android:id="@+id/action_all_items"
-        android:title="@string/display_all"
-        app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_choose_category"
-        android:title="@string/choose_a_category"
-        app:showAsAction="ifRoom"/>
+        />
+    <item android:id="@+id/action_clear_db"
+        android:title="@string/clearDb"
+        />
+    <item android:id="@+id/action_load_db"
+        android:title="@string/seedDb"
+        />
 </menu>

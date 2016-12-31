@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.example.android.data.database.TripDataSource;
+import com.example.android.data.database.DataSource;
 import com.example.android.data.model.SampleWpDataProvider;
 import com.example.android.data.model.WpItem;
 
@@ -19,7 +19,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvName;
 
     List<WpItem> wpList = SampleWpDataProvider.sWpList;
-    TripDataSource mDataSource;
+    DataSource mDataSource;
     List<WpItem> listFromDB;
     RecyclerView mRecyclerView;
     WpAdapter mWpAdapter;
@@ -37,7 +37,7 @@ public class DetailActivity extends AppCompatActivity {
 
         Log.d("TBR:", "id received: "+id);
 
-        mDataSource = new TripDataSource(this);
+        mDataSource = new DataSource(this);
         mDataSource.open();
         mDataSource.seedWpTable(wpList);
 
