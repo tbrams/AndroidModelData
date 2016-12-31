@@ -24,6 +24,8 @@ public class TripItem implements Parcelable {
 
         if (tripId == null) {
             this.tripId= UUID.randomUUID().toString();
+        } else {
+            this.tripId=tripId;
         }
         this.tripName = tripName;
         this.tripDate = tripDate;
