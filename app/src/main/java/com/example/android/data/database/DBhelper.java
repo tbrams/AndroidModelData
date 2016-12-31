@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class DBhelper extends SQLiteOpenHelper {
-    public static final String DB_FILE_NAME = "wp.db";
+    public static final String DB_FILE_NAME = "tour.db";
     public static final int DB_VERSION=1;
 
     public DBhelper(Context context) {
@@ -18,11 +18,13 @@ public class DBhelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TripTable.SQL_CREATE);
+        db.execSQL(WpTable.SQL_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL(TripTable.SQL_DELETE);
+        db.execSQL(WpTable.SQL_DELETE);
         onCreate(db);
     }
 }

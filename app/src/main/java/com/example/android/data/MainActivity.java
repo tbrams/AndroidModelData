@@ -16,22 +16,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.android.data.database.DataSource;
-import com.example.android.data.model.SampleDataProvider;
+import com.example.android.data.database.TripDataSource;
+import com.example.android.data.model.SampleTripDataProvider;
 import com.example.android.data.model.TripItem;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<TripItem> tripList = SampleDataProvider.sTripList;
-    DataSource mDataSource;
+    List<TripItem> tripList = SampleTripDataProvider.sTripList;
+    TripDataSource mDataSource;
     List<TripItem> listFromDB;
     DrawerLayout mDrawerLayout;
     ListView mDrawerList;
     String[] mCategories;
     RecyclerView mRecyclerView;
-    DataItemAdapter mDataTripAdapter;
+    TripAdapter mTripAdapter;
 
 
         @Override
@@ -57,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-            mDataSource = new DataSource(this);
+            mDataSource = new TripDataSource(this);
             mDataSource.open();
-            mDataSource.seedDataBase(tripList);
+            mDataSource.seedTripTable(tripList);
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
             boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayTrips(String category) {
         listFromDB = mDataSource.getAllTrips(category);
-        mDataTripAdapter = new DataItemAdapter(this, listFromDB);
-        mRecyclerView.setAdapter(mDataTripAdapter);
+        mTripAdapter = new TripAdapter(this, listFromDB);
+        mRecyclerView.setAdapter(mTripAdapter);
     }
 
 

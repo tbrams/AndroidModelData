@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">Nadia\'s</string>
-    <string name="ready_to_code">Ready to code!</string>
-    <string name="sign_in">Sign In</string>
+    <string name="app_name">Trips</string>
     <string name="pref_display_grid">pref_display_grid</string>
     <string name="settings">Settings</string>
     <string name="display_in_grid">Display in grid</string>

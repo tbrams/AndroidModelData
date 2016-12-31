@@ -14,11 +14,11 @@ import com.example.android.data.model.TripItem;
 import java.util.List;
 
 
-public class DataItemAdapterListView extends ArrayAdapter<TripItem> {
+public class TripAdapterListView extends ArrayAdapter<TripItem> {
     List<TripItem> mTripItems;
     LayoutInflater mLayoutInflater;
 
-    public DataItemAdapterListView(Context context, List<TripItem> objects) {
+    public TripAdapterListView(Context context, List<TripItem> objects) {
         super(context, R.layout.list_element, objects);
 
         mTripItems=objects;
@@ -33,7 +33,7 @@ public class DataItemAdapterListView extends ArrayAdapter<TripItem> {
             convertView = mLayoutInflater.inflate(R.layout.list_element, parent, false);
         }
 
-        TextView textView = (TextView) convertView.findViewById(R.id.itemNameText);
+        TextView textView = (TextView) convertView.findViewById(R.id.tripNameText);
         ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
 
         TripItem trip = mTripItems.get(position);
