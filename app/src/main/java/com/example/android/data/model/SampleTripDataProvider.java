@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SampleTripDataProvider {
-    public static List<TripItem> sTripList;
+    public static List<TripItem>        sTripList;
     public static Map<String, TripItem> sTripMap;
 
     static {
         sTripList = new ArrayList<>();
-        sTripMap = new HashMap<>();
+        sTripMap  = new HashMap<>();
 
         addItem(new TripItem("e8d0070b-5544-44ce-99f9-2893318f1af0", "Experiment 1 / EKRK - EKOD","11/16/2016", 152.8));
         addItem(new TripItem("6b7ee70a-c8b8-4dac-9003-ed8595163ab1", "Testing / Sengeloese-Roskilde","11/17/2016", 3.4));

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.data.model.TripItem;
 
@@ -19,14 +18,24 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
 
     public static final String ITEM_ID_KEY = "item_id_key";
     public static final String ITEM_KEY = "item_key";
-    private List<TripItem> mTrips;
-    private Context mContext;
 
+
+    private List<TripItem>  mTrips;
+    private Context         mContext;
+
+    /*
+     * constructor
+     * Keep context and a list of Trip objects here
+     */
     public TripAdapter(Context context, List<TripItem> trips) {
         this.mContext = context;
         this.mTrips = trips;
     }
 
+
+    /*
+     * Prepare the list_element layout for new list elements
+     */
     @Override
     public TripAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -36,6 +45,10 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         return viewHolder;
     }
 
+    /*
+     * Display list item number(position) using handles from ViewHolder
+     * Also alternate background color on uneven rows
+     */
     @Override
     public void onBindViewHolder(TripAdapter.ViewHolder holder, int position) {
         final TripItem trip = mTrips.get(position);
@@ -47,15 +60,13 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         if (position % 2 == 1) {
             holder.mView.setBackgroundColor(Color.LTGRAY);
         }
-        // This is the place to add event listeners
+
+        // Set click handler for this list element
+        // Forward the id of the element to next activity
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, "You selected "+trip.getTripId(), Toast.LENGTH_SHORT).show();
-
                 String id = trip.getTripId();
-                Log.d("TBR:", "Id: "+id);
-
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra(ITEM_KEY, id);
                 mContext.startActivity(intent);
@@ -63,18 +74,23 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         });
     }
 
+
     @Override
     public int getItemCount() {
         return mTrips.size();
     }
 
 
+    /*
+     * Get handle to fields for display and the layout view because
+     * We might need to alternate the background color
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvName;
         public TextView tvDist;
         public TextView tvDate;
-        public View mView;
+        public View     mView;
 
         public ViewHolder(View itemView) {
             super(itemView);

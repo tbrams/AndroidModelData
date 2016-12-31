@@ -9,37 +9,57 @@ import android.view.MenuItem;
 
 import com.example.android.data.database.DataSource;
 import com.example.android.data.model.SampleTripDataProvider;
+import com.example.android.data.model.SampleWpDataProvider;
 import com.example.android.data.model.TripItem;
+import com.example.android.data.model.WpItem;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<TripItem> tripList = SampleTripDataProvider.sTripList;
-    DataSource mDataSource;
-    List<TripItem> listFromDB;
-    RecyclerView mRecyclerView;
-    TripAdapter mTripAdapter;
+    List<TripItem>  tripList = SampleTripDataProvider.sTripList;
+    List<WpItem>    wpList   = SampleWpDataProvider.sWpList;
+
+    DataSource      mDataSource;
+    List<TripItem> mListFromDB;
+    RecyclerView    mRecyclerView;
+    TripAdapter     mTripAdapter;
 
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-            mDataSource = new DataSource(this);
-            mDataSource.open();
-            mDataSource.seedTripTable(tripList);
+        // Get a handle to the database helper and prepare the database
+        mDataSource = new DataSource(this);
+        mDataSource.open();
 
-            mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
+        // Initialize database tables
+        // In case they are empty - use some test data
+        mDataSource.seedTripTable(tripList);
+        mDataSource.seedWpTable(wpList);
 
-            displayTrips(null);
+        // Get a reference to the layout for the recyclerView
+        mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
 
-        }
+        displayTrips(null);
 
-    private void displayTrips(String category) {
-        listFromDB = mDataSource.getAllTrips(category);
-        mTripAdapter = new TripAdapter(this, listFromDB);
+    }
+
+    /*
+     * displayTrips
+     * Lookup trip data in the database considering the filter. Create a list of
+     * matching object for each row returned and feed that to the TripAdapter that will
+     * be used for the List.
+     *
+     * @args:   filter
+     * @return: none
+     */
+    private void displayTrips(String filter) {
+        mListFromDB  = mDataSource.getAllTrips(filter);
+        mTripAdapter = new TripAdapter(this, mListFromDB);
+
         mRecyclerView.setAdapter(mTripAdapter);
     }
 
@@ -75,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_clear_db:
                 // display all items
         //        displayTrips(null);
+                mDataSource
                 return true;
 
             case R.id.action_load_db:

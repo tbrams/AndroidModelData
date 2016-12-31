@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SampleWpDataProvider {
-    public static List<WpItem> sWpList;
+    public static List<WpItem>        sWpList;
     public static Map<String, WpItem> sWpMap;
 
     static {

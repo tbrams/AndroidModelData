@@ -22,11 +22,12 @@ public class WpItem implements Parcelable {
     public WpItem() {
     }
 
-    public WpItem(String wpId, String wpName, Double lat, Double lon, Double wpDistance, String wpAltitude, String tripIndex, String wpSequenceNumber) {
+    public WpItem(String id, String wpName, Double lat, Double lon, Double wpDistance, String wpAltitude, String tripIndex, String wpSequenceNumber) {
         if (wpId == null) {
-            wpId= UUID.randomUUID().toString();
+            this.wpId= UUID.randomUUID().toString();
+        } else {
+            this.wpId=id;
         }
-        this.wpId = wpId;
         this.wpName = wpName;
         this.wpLat = lat;
         this.wpLon = lon;

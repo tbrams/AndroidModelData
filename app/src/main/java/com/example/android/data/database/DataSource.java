@@ -18,9 +18,9 @@ import java.util.List;
 
 public class DataSource {
 
-    private Context mContext;
-    private SQLiteDatabase mDb;
-    private SQLiteOpenHelper mDbOpenHelper;
+    private Context             mContext;
+    private SQLiteDatabase      mDb;
+    private SQLiteOpenHelper    mDbOpenHelper;
 
 
     /*
