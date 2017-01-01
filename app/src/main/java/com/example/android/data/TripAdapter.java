@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
     public static final String ITEM_ID_KEY = "item_id_key";
     public static final String ITEM_KEY = "item_key";
 
-
+    private Color mColor;
     private List<TripItem>  mTrips;
     private Context         mContext;
 
@@ -41,6 +40,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View itemView = inflater.inflate(R.layout.list_element, parent, false);
+
         ViewHolder viewHolder = new ViewHolder(itemView);
         return viewHolder;
     }
@@ -59,6 +59,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
 
         if (position % 2 == 1) {
             holder.mView.setBackgroundColor(Color.LTGRAY);
+        } else {
+            holder.mView.setBackgroundColor(Color.parseColor("#A4A4A4"));
         }
 
         // Set click handler for this list element

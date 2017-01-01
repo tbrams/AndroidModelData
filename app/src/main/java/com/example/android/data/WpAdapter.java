@@ -47,9 +47,10 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder> {
         final WpItem wp = mWpList.get(position);
 
         holder.tvName.setText(wp.getWpName());
-
         if (position % 2 == 1) {
             holder.mView.setBackgroundColor(Color.LTGRAY);
+        } else {
+            holder.mView.setBackgroundColor(Color.parseColor("#A4A4A4"));
         }
         // This is the place to add event listeners
         holder.mView.setOnClickListener(new View.OnClickListener() {

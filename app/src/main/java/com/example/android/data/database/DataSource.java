@@ -301,20 +301,20 @@ public class DataSource {
         Cursor cursor;
 
         if (id==null) {
-            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_SEQUENCE_NUMBER);
         } else {
             String[] fields = {id};
-            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_SEQUENCE_NUMBER);
         }
 
         while (cursor.moveToNext()) {
             WpItem wp = new WpItem();
             wp.setWpId(cursor.getString(cursor.getColumnIndex(WpTable.COLUMN_ID)));
             wp.setWpName(cursor.getString(cursor.getColumnIndex(WpTable.COLUMN_NAME)));
-            wp.setWpAltitude(cursor.getString(cursor.getColumnIndex(WpTable.COLUMN_ALT)));
+            wp.setWpAltitude(cursor.getInt(cursor.getColumnIndex(WpTable.COLUMN_ALT)));
             wp.setWpDistance(cursor.getDouble(cursor.getColumnIndex(WpTable.COLUMN_DIST)));
             wp.setTripIndex(cursor.getString(cursor.getColumnIndex(WpTable.COLUMN_TRIP_ID)));
-            wp.setWpSequenceNumber(cursor.getString(cursor.getColumnIndex(WpTable.COLUMN_SEQUENCE_NUMBER)));
+            wp.setWpSequenceNumber(cursor.getInt(cursor.getColumnIndex(WpTable.COLUMN_SEQUENCE_NUMBER)));
             wps.add(wp);
         }
         cursor.close();

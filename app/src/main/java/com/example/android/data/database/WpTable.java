@@ -23,9 +23,9 @@ public class WpTable {
                     COLUMN_LAT  + " REAL," +
                     COLUMN_LON  + " REAL," +
                     COLUMN_DIST + " REAL," +
-                    COLUMN_ALT  + " TEXT," +
+                    COLUMN_ALT  + " INTEGER," +
                     COLUMN_TRIP_ID + " TEXT," +
-                    COLUMN_SEQUENCE_NUMBER + " TEXT" + ");";
+                    COLUMN_SEQUENCE_NUMBER + " INTEGER" + ");";
 
     public static final String SQL_DELETE =
             "DROP TABLE " + TABLE_NAME;

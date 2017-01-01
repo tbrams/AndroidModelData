@@ -14,15 +14,15 @@ public class WpItem implements Parcelable {
     private Double wpLat;
     private Double wpLon;
     private Double wpDistance;
-    private String wpAltitude;
+    private Integer wpAltitude;
     private String tripIndex;
-    private String wpSequenceNumber;
+    private Integer wpSequenceNumber;
 
 
     public WpItem() {
     }
 
-    public WpItem(String id, String wpName, Double lat, Double lon, Double wpDistance, String wpAltitude, String tripIndex, String wpSequenceNumber) {
+    public WpItem(String id, String wpName, Double lat, Double lon, Double wpDistance, Integer wpAltitude, String tripIndex, Integer wpSequenceNumber) {
         if (wpId == null) {
             this.wpId= UUID.randomUUID().toString();
         } else {
@@ -77,11 +77,11 @@ public class WpItem implements Parcelable {
         this.wpDistance = wpDistance;
     }
 
-    public String getWpAltitude() {
+    public Integer getWpAltitude() {
         return wpAltitude;
     }
 
-    public void setWpAltitude(String wpAltitude) {
+    public void setWpAltitude(Integer wpAltitude) {
         this.wpAltitude = wpAltitude;
     }
 
@@ -93,11 +93,11 @@ public class WpItem implements Parcelable {
         this.tripIndex = tripIndex;
     }
 
-    public String getWpSequenceNumber() {
+    public Integer getWpSequenceNumber() {
         return wpSequenceNumber;
     }
 
-    public void setWpSequenceNumber(String wpSequenceNumber) {
+    public void setWpSequenceNumber(Integer wpSequenceNumber) {
         this.wpSequenceNumber = wpSequenceNumber;
     }
 
@@ -124,9 +124,9 @@ public class WpItem implements Parcelable {
                 ", wpLat=" + wpLat +
                 ", wpLon=" + wpLon +
                 ", wpDistance=" + wpDistance +
-                ", wpAltitude='" + wpAltitude + '\'' +
+                ", wpAltitude=" + wpAltitude +
                 ", tripIndex='" + tripIndex + '\'' +
-                ", wpSequenceNumber='" + wpSequenceNumber + '\'' +
+                ", wpSequenceNumber=" + wpSequenceNumber +
                 '}';
     }
 
@@ -142,9 +142,9 @@ public class WpItem implements Parcelable {
         dest.writeValue(this.wpLat);
         dest.writeValue(this.wpLon);
         dest.writeValue(this.wpDistance);
-        dest.writeString(this.wpAltitude);
+        dest.writeInt(this.wpAltitude);
         dest.writeString(this.tripIndex);
-        dest.writeString(this.wpSequenceNumber);
+        dest.writeInt(this.wpSequenceNumber);
     }
 
     protected WpItem(Parcel in) {
@@ -153,9 +153,9 @@ public class WpItem implements Parcelable {
         this.wpLat = (Double) in.readValue(Double.class.getClassLoader());
         this.wpLon = (Double) in.readValue(Double.class.getClassLoader());
         this.wpDistance = (Double) in.readValue(Double.class.getClassLoader());
-        this.wpAltitude = in.readString();
+        this.wpAltitude = in.readInt();
         this.tripIndex = in.readString();
-        this.wpSequenceNumber = in.readString();
+        this.wpSequenceNumber = in.readInt();
     }
 
     public static final Parcelable.Creator<WpItem> CREATOR = new Parcelable.Creator<WpItem>() {

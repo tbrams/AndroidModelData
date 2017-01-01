@@ -8,22 +8,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.android.data.database.DataSource;
-import com.example.android.data.model.SampleTripDataProvider;
+import com.example.android.data.model.SampleDataProvider;
 import com.example.android.data.model.TripItem;
 import com.example.android.data.model.WpItem;
 
 import java.util.List;
 
-import static com.example.android.data.model.SampleTripDataProvider.sWpListForAllOperation;
-
 public class MainActivity extends AppCompatActivity {
     private static final String LOG = MainActivity.class.getName();
 
-    List<TripItem>  mTripList = SampleTripDataProvider.sTripList;
-    List<WpItem>    mWpList   = SampleTripDataProvider.sWpList;
-
-    // Data for new add_all operation
-    List<WpItem>    mSpecWps = sWpListForAllOperation;
+    List<String>        mTripList = SampleDataProvider.sTrips;
+    List<List<WpItem>>  mWpList = SampleDataProvider.sWpListsForTrips;
 
     DataSource      mDataSource;
     List<TripItem>  mListFromDB;
@@ -41,10 +36,13 @@ public class MainActivity extends AppCompatActivity {
         mDataSource.open();
 
         // Initialize database tables
-        // In case they are empty - use some test data
-        mDataSource.seedTripTable(mTripList);
-        mDataSource.seedWpTable(mWpList);
-        mDataSource.addFullTrip("Test full trip adding", mSpecWps);
+        for (int i = 0; i < mTripList.size(); i++) {
+            String       tripName = mTripList.get(i);
+            List<WpItem> wpList   = mWpList.get(i);
+
+            mDataSource.addFullTrip(tripName, wpList);
+
+        }
 
 
         // Get a reference to the layout for the recyclerView
