@@ -24,7 +24,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
 
     /*
      * constructor
-     * Keep context and a list of Trip objects here
+     * Keep context and a copy of the data list
      */
     public TripAdapter(Context context, List<TripItem> trips) {
         this.mContext = context;

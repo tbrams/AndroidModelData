@@ -35,14 +35,7 @@ public class MainActivity extends AppCompatActivity {
         mDataSource = new DataSource(this);
         mDataSource.open();
 
-        // Initialize database tables
-        for (int i = 0; i < mTripList.size(); i++) {
-            String       tripName = mTripList.get(i);
-            List<WpItem> wpList   = mWpList.get(i);
-
-            mDataSource.addFullTrip(tripName, wpList);
-
-        }
+        populateDatabase();
 
 
         // Get a reference to the layout for the recyclerView
@@ -50,6 +43,19 @@ public class MainActivity extends AppCompatActivity {
 
         displayTrips(null);
 
+    }
+
+
+    private void populateDatabase() {
+        if (mDataSource.getTripCount()==0) {
+            // Initialize database tables
+            for (int i = 0; i < mTripList.size(); i++) {
+                String tripName = mTripList.get(i);
+                List<WpItem> wpList = mWpList.get(i);
+
+                mDataSource.addFullTrip(tripName, wpList);
+            }
+        }
     }
 
     /*
@@ -99,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_clear_db:
                 mDataSource.resetDB();
+                populateDatabase();
                 return true;
 
             case R.id.action_load_db:

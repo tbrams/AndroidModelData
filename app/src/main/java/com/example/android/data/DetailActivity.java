@@ -2,6 +2,7 @@ package com.example.android.data;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
@@ -18,9 +19,10 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvName;
 
     DataSource   mDataSource;
-    List<WpItem> listFromDB;
+    List<WpItem> mListFromDB;
     RecyclerView mRecyclerView;
     WpAdapter    mWpAdapter;
+    String       mId;
 
 
     @Override
@@ -29,26 +31,35 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Get trip id from intent extra storage
-        String id = getIntent().getExtras().getString(TripAdapter.ITEM_KEY);
-        if (id == null) {
-            throw new AssertionError("Null data index for wp received!");
+        mId = getIntent().getExtras().getString(TripAdapter.ITEM_KEY);
+        if (mId == null) {
+            Log.d("TBR:", "DetailActivity received a null id from extras");
         }
 
-        mDataSource = new DataSource(this);
-        mDataSource.open();
-
-
+        // Get a reference to the recyclerView and make sure we have defined
+        // a LayoutManager ... otherwise it will crash
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        displayWps(id);
+        displayWps(mId);
     }
 
 
     private void displayWps(String id) {
-        listFromDB = mDataSource.getAllWps(id);
-        Log.d("TBR:", "displayWPS with #pts: " + listFromDB.size());
-        mWpAdapter = new WpAdapter(this, listFromDB);
-        mRecyclerView.setAdapter(mWpAdapter);
+
+        // Get the WP data ready for display
+        mDataSource = new DataSource(this);
+        mDataSource.open();
+        mListFromDB = mDataSource.getAllWps(id);
+
+        if (mWpAdapter==null) {
+            // create an adapter and initiate it with the available data
+            mWpAdapter = new WpAdapter(this, mListFromDB);
+            mRecyclerView.setAdapter(mWpAdapter);
+        } else {
+            // It is already on screen, we just need to refresh
+            mWpAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -60,8 +71,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mDataSource.open();
-        mRecyclerView.refreshDrawableState();
+        displayWps(mId);
     }
 
 
