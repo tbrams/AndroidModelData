@@ -78,7 +78,6 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
 
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         public TextView tvName;
         public TextView tvDist;
@@ -112,7 +111,6 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
 
             // First get a copy of the item to be deleted
             WpItem wp= mWpList.get(this.getAdapterPosition());
-            Toast.makeText(mContext, "Long click on "+wp.getWpName(), Toast.LENGTH_SHORT).show();
 
             // Remove from the list and update the listview
             mWpList.remove(this.getAdapterPosition());
