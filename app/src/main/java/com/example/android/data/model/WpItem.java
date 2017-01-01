@@ -101,7 +101,7 @@ public class WpItem implements Parcelable {
         this.wpSequenceNumber = wpSequenceNumber;
     }
 
-    public ContentValues toValues() {
+    public ContentValues toContentValues() {
         ContentValues values = new ContentValues(6);
 
         values.put(WpTable.COLUMN_ID, wpId);

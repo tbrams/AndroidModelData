@@ -2,7 +2,7 @@ package com.example.android.data.database;
 
 public class WpTable {
 
-    public static final String TABLE_WPS = "wps";
+    public static final String TABLE_NAME = "wps";
 
     public static final String COLUMN_ID   = "wpId";
     public static final String COLUMN_NAME = "wpName";
@@ -17,7 +17,7 @@ public class WpTable {
     public static final String[] ALL_COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_LAT, COLUMN_LON, COLUMN_DIST, COLUMN_ALT, COLUMN_TRIP_ID, COLUMN_SEQUENCE_NUMBER};
 
     public static final String SQL_CREATE =
-            "CREATE TABLE " + TABLE_WPS + "(" +
+            "CREATE TABLE " + TABLE_NAME + "(" +
                     COLUMN_ID + " TEXT PRIMARY KEY," +
                     COLUMN_NAME + " TEXT," +
                     COLUMN_LAT  + " REAL," +
@@ -28,5 +28,5 @@ public class WpTable {
                     COLUMN_SEQUENCE_NUMBER + " TEXT" + ");";
 
     public static final String SQL_DELETE =
-            "DROP TABLE " + TABLE_WPS;
+            "DROP TABLE " + TABLE_NAME;
 }

@@ -4,7 +4,6 @@ package com.example.android.data.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.example.android.data.database.TripTable;
 
@@ -64,11 +63,10 @@ public class TripItem implements Parcelable {
         this.tripDistance = tripDistance;
     }
 
-    public ContentValues toValues() {
+    public ContentValues toContentValues() {
         ContentValues values = new ContentValues(4);
 
-        Log.d("TBR:", "toValues, tripId: "+tripId);
-        values.put(TripTable.COLUMN_ID, tripId);
+        values.put(TripTable.COLUMN_ID,   tripId);
         values.put(TripTable.COLUMN_NAME, tripName);
         values.put(TripTable.COLUMN_DIST, tripDistance);
         values.put(TripTable.COLUMN_DATE, tripDate);
@@ -79,9 +77,9 @@ public class TripItem implements Parcelable {
     @Override
     public String toString() {
         return "TripItem{" +
-                "tripId='" + tripId + '\'' +
-                ", tripName='" + tripName + '\'' +
-                ", tripDate='" + tripDate + '\'' +
+                "tripId='"        + tripId + '\'' +
+                ", tripName='"    + tripName + '\'' +
+                ", tripDate='"    + tripDate + '\'' +
                 ", tripDistance=" + tripDistance +
                 '}';
     }

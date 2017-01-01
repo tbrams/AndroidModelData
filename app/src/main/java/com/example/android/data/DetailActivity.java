@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.android.data.database.DataSource;
-import com.example.android.data.model.SampleWpDataProvider;
 import com.example.android.data.model.WpItem;
 
 import java.util.List;

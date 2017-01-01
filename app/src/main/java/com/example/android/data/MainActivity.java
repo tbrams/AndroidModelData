@@ -9,19 +9,24 @@ import android.view.MenuItem;
 
 import com.example.android.data.database.DataSource;
 import com.example.android.data.model.SampleTripDataProvider;
-import com.example.android.data.model.SampleWpDataProvider;
 import com.example.android.data.model.TripItem;
 import com.example.android.data.model.WpItem;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.android.data.model.SampleTripDataProvider.sWpListForAllOperation;
 
-    List<TripItem>  tripList = SampleTripDataProvider.sTripList;
-    List<WpItem>    wpList   = SampleWpDataProvider.sWpList;
+public class MainActivity extends AppCompatActivity {
+    private static final String LOG = MainActivity.class.getName();
+
+    List<TripItem>  mTripList = SampleTripDataProvider.sTripList;
+    List<WpItem>    mWpList   = SampleTripDataProvider.sWpList;
+
+    // Data for new add_all operation
+    List<WpItem>    mSpecWps = sWpListForAllOperation;
 
     DataSource      mDataSource;
-    List<TripItem> mListFromDB;
+    List<TripItem>  mListFromDB;
     RecyclerView    mRecyclerView;
     TripAdapter     mTripAdapter;
 
@@ -37,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize database tables
         // In case they are empty - use some test data
-        mDataSource.seedTripTable(tripList);
-        mDataSource.seedWpTable(wpList);
+        mDataSource.seedTripTable(mTripList);
+        mDataSource.seedWpTable(mWpList);
+        mDataSource.addFullTrip("Test full trip adding", mSpecWps);
+
 
         // Get a reference to the layout for the recyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
@@ -93,14 +100,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_clear_db:
-                // display all items
-        //        displayTrips(null);
-                mDataSource
+                mDataSource.resetDB();
                 return true;
 
             case R.id.action_load_db:
-                //open the drawer
-         //       mDrawerLayout.openDrawer(mDrawerList);
                 return true;
         }
         return super.onOptionsItemSelected(item);

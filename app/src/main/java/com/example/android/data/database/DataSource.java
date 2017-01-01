@@ -13,10 +13,15 @@ import android.util.Log;
 import com.example.android.data.model.TripItem;
 import com.example.android.data.model.WpItem;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DataSource {
+    private static final String LOG = "TBR DataSource";
+
 
     private Context             mContext;
     private SQLiteDatabase      mDb;
@@ -29,10 +34,8 @@ public class DataSource {
      */
     public DataSource(Context context) {
         mContext = context;
-        mDbOpenHelper = new DBhelper(context);
+        mDbOpenHelper = new DbHelper(context);
         mDb = mDbOpenHelper.getWritableDatabase();
-
-        Log.d("TBR:", "DataSource constructor");
     }
 
 
@@ -46,6 +49,13 @@ public class DataSource {
         mDbOpenHelper.close();
     }
 
+    public void resetDB() {
+        mDb.execSQL(TripTable.SQL_DELETE);
+        mDb.execSQL(WpTable.SQL_DELETE);
+        mDb.execSQL(TripTable.SQL_CREATE);
+        mDb.execSQL(WpTable.SQL_CREATE);
+    }
+
 
     //
     //Trip Table specifics
@@ -54,8 +64,11 @@ public class DataSource {
 
     /*
      * createTrip
-     * This is the function responsible for inserting data into the Trips Table. Will be returning
-     * the same object in case we need to check if something has been changed.
+     * This is the function responsible for inserting data into the Trips Table.  It does that
+     * by creating ContentValues for all object attributes and then pass the entire thing to
+     * the DB helper insert function.
+     *
+     * Will be returning the same object in case we need to check if something has been changed.
      *
      * @Args: Trip Object
      *
@@ -64,10 +77,32 @@ public class DataSource {
      */
 
     public TripItem createTrip(TripItem trip) {
-        ContentValues values = trip.toValues();
+        ContentValues values = trip.toContentValues();
 
-        mDb.insert(TripTable.TABLE_TRIPS, null, values);
+        mDb.insert(TripTable.TABLE_NAME, null, values);
         return trip;
+    }
+
+
+    /*
+     * deleteTrip
+     * This function will erase a trip from the Trip table and
+     * also the associated waypoints from the WP table
+     *
+     * @params: id  - Trip Id
+     * @Returns: none
+     */
+    public void deleteTrip(TripItem trip) {
+        // Get a list of all associated WPs
+        List<WpItem> allWps = getAllWps(trip.getTripId());
+        // delete them all
+        for (WpItem wp : allWps) {
+            deleteWp(wp);
+        }
+
+        // Then delete the trip from the Trip Table
+        mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?",
+                new String[] { trip.getTripId() });
     }
 
 
@@ -82,7 +117,7 @@ public class DataSource {
      *
      */
     public long getTripCount() {
-        return DatabaseUtils.queryNumEntries(mDb, TripTable.TABLE_TRIPS);
+        return DatabaseUtils.queryNumEntries(mDb, TripTable.TABLE_NAME);
     }
 
 
@@ -112,6 +147,28 @@ public class DataSource {
     }
 
 
+    public void addFullTrip(String name, List<WpItem> wps) {
+        TripItem trip = new TripItem(null, name, getDate(), null);
+
+        double dist=0.;
+        for (WpItem wp : wps) {
+            // get distance
+            if (wp.getWpDistance()!=null) {
+                dist += wp.getWpDistance();
+            }
+            // update trip index to this trip
+            wp.setTripIndex(trip.getTripId());
+            // Then write to database
+            createWp(wp);
+        }
+        // Update trip with total distance and write to DB
+        trip.setTripDistance(dist);
+        Log.d(LOG, "trip index: "+ trip.getTripId());
+        Log.d(LOG, "trip distance: "+ trip.getTripDistance());
+
+        createTrip(trip);
+    }
+
     /*
      * getAllTrips
      * Lookup matching records in the database and for each create a matching object and return
@@ -128,10 +185,10 @@ public class DataSource {
         Cursor cursor;
 
         if (category==null) {
-            cursor = mDb.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, null,null,null,null,TripTable.COLUMN_DATE);
+            cursor = mDb.query(TripTable.TABLE_NAME, TripTable.ALL_COLUMNS, null,null,null,null,TripTable.COLUMN_DATE);
         } else {
             String[] categories = {category};
-            cursor = mDb.query(TripTable.TABLE_TRIPS, TripTable.ALL_COLUMNS, TripTable.COLUMN_DATE+"=?",categories,null,null,TripTable.COLUMN_NAME);
+            cursor = mDb.query(TripTable.TABLE_NAME, TripTable.ALL_COLUMNS, TripTable.COLUMN_DATE+"=?",categories,null,null,TripTable.COLUMN_NAME);
         }
 
 
@@ -168,12 +225,24 @@ public class DataSource {
      *
      */
     public WpItem createWp(WpItem wp) {
-        ContentValues values = wp.toValues();
+        ContentValues values = wp.toContentValues();
 
-        mDb.insert(WpTable.TABLE_WPS, null, values);
+        mDb.insert(WpTable.TABLE_NAME, null, values);
         return wp;
     }
 
+
+    /*
+     * deleteWp
+     * This function will erase a way point from the WP table
+     *
+     * @params: wp   - the WpItem to be deleted
+     * @Returns: none
+     */
+    public void deleteWp(WpItem wp) {
+        mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?",
+                new String[] { wp.getWpId() });
+    }
 
 
     /*
@@ -186,7 +255,7 @@ public class DataSource {
       *
       */
     public long getWpCount() {
-        return DatabaseUtils.queryNumEntries(mDb, WpTable.TABLE_WPS);
+        return DatabaseUtils.queryNumEntries(mDb, WpTable.TABLE_NAME);
     }
 
 
@@ -232,10 +301,10 @@ public class DataSource {
         Cursor cursor;
 
         if (id==null) {
-            cursor = mDb.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_NAME);
         } else {
             String[] fields = {id};
-            cursor = mDb.query(WpTable.TABLE_WPS, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_NAME);
+            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_NAME);
         }
 
         while (cursor.moveToNext()) {
@@ -251,5 +320,16 @@ public class DataSource {
         cursor.close();
 
         return wps;
+    }
+
+
+    /*
+     * get date string
+     *
+     */
+    private String getDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

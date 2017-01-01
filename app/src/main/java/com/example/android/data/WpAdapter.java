@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.data.database.DataSource;
 import com.example.android.data.model.WpItem;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder> {
 
     private List<WpItem> mWpList;
     private Context mContext;
+    DataSource mDataSource;
 
     public WpAdapter(Context context, List<WpItem> wps) {
         this.mContext = context;
@@ -45,8 +47,6 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder> {
         final WpItem wp = mWpList.get(position);
 
         holder.tvName.setText(wp.getWpName());
-//        holder.tvDist.setText(String.format("%.2f nm",trip.getTripDistance()));
-//        holder.tvDate.setText(trip.getTripDate());
 
         if (position % 2 == 1) {
             holder.mView.setBackgroundColor(Color.LTGRAY);
@@ -57,13 +57,18 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder> {
             public void onClick(View view) {
                 Toast.makeText(mContext, "You selected "+wp.getWpName(), Toast.LENGTH_SHORT).show();
 
-//                String id = trip.getTripId();
-//                Intent intent = new Intent(mContext, DetailActivity.class);
-//                intent.putExtra(ITEM_KEY, trip);
-//                mContext.startActivity(intent);
             }
         });
 
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                Toast.makeText(mContext, "You will be deleting id:"+wp.getWpId(), Toast.LENGTH_SHORT).show();
+
+                return false;
+            }
+        });
 
     }
 
