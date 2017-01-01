@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.android.data.database.DataSource;
 import com.example.android.data.model.TripItem;
 
 import java.util.List;
@@ -18,9 +21,11 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
     public static final String ITEM_ID_KEY = "item_id_key";
     public static final String ITEM_KEY = "item_key";
 
-    private Color mColor;
     private List<TripItem>  mTrips;
     private Context         mContext;
+    private DataSource mDataSource;
+
+
 
     /*
      * constructor
@@ -29,6 +34,10 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
     public TripAdapter(Context context, List<TripItem> trips) {
         this.mContext = context;
         this.mTrips = trips;
+
+        // Get a handle to the database helper and prepare the database
+        mDataSource = new DataSource(mContext);
+        mDataSource.open();
     }
 
 
@@ -58,22 +67,11 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         holder.tvDate.setText(trip.getTripDate());
 
         if (position % 2 == 1) {
-            holder.mView.setBackgroundColor(Color.LTGRAY);
+            holder.itemView.setBackgroundColor(Color.LTGRAY);
         } else {
-            holder.mView.setBackgroundColor(Color.parseColor("#A4A4A4"));
+            holder.itemView.setBackgroundColor(Color.parseColor("#A4A4A4"));
         }
 
-        // Set click handler for this list element
-        // Forward the id of the element to next activity
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String id = trip.getTripId();
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra(ITEM_KEY, id);
-                mContext.startActivity(intent);
-            }
-        });
     }
 
 
@@ -87,19 +85,57 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
      * Get handle to fields for display and the layout view because
      * We might need to alternate the background color
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
         public TextView tvName;
         public TextView tvDist;
         public TextView tvDate;
-        public View     mView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mView = itemView;
             tvName = (TextView) itemView.findViewById(R.id.tripNameText);
             tvDist = (TextView) itemView.findViewById(R.id.tripDistText);
             tvDate = (TextView) itemView.findViewById(R.id.tripDateText);
+
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+
+        /*
+         * Start a detail session based on Trip Id
+         */
+        @Override
+        public void onClick(View view) {
+
+            TripItem trip= mTrips.get(this.getAdapterPosition());
+            Intent intent = new Intent(mContext, DetailActivity.class);
+            intent.putExtra(ITEM_KEY, trip.getTripId());
+            Log.d("TBR","Passing id: "+trip.getTripId());
+            mContext.startActivity(intent);
+        }
+
+
+
+        /*
+         * This is the severe action - delete the Trip
+         */
+        @Override
+        public boolean onLongClick(View view) {
+            Log.d("TBR", "ViewHolder Long Clicked");
+
+            TripItem trip= mTrips.get(this.getAdapterPosition());
+
+            // Remove from the list and update the listview
+            mTrips.remove(this.getAdapterPosition());
+            notifyDataSetChanged();
+
+            Toast.makeText(mContext, "You deleted "+trip.getTripName(), Toast.LENGTH_SHORT).show();
+
+            // Drop from database
+            mDataSource.deleteTrip(trip);
+
+            return false;
         }
     }
 }

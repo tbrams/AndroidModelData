@@ -93,15 +93,20 @@ public class DataSource {
      * @Returns: none
      */
     public void deleteTrip(TripItem trip) {
+        Log.d("TBR","deleteTrip for "+trip.getTripName());
+        Log.d("TBR","trip id "+trip.getTripId());
         // Get a list of all associated WPs
         List<WpItem> allWps = getAllWps(trip.getTripId());
+        Log.d("TBR","We have #WPs "+allWps.size());
+
         // delete them all
         for (WpItem wp : allWps) {
+            Log.d("TBR","Deleting WP "+wp.getWpName());
             deleteWp(wp);
         }
 
         // Then delete the trip from the Trip Table
-        mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?",
+        mDb.delete(TripTable.TABLE_NAME, TripTable.COLUMN_ID + " = ?",
                 new String[] { trip.getTripId() });
     }
 
@@ -163,8 +168,6 @@ public class DataSource {
         }
         // Update trip with total distance and write to DB
         trip.setTripDistance(dist);
-        Log.d(LOG, "trip index: "+ trip.getTripId());
-        Log.d(LOG, "trip distance: "+ trip.getTripDistance());
 
         createTrip(trip);
     }
@@ -303,8 +306,11 @@ public class DataSource {
         if (id==null) {
             cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_SEQUENCE_NUMBER);
         } else {
-            String[] fields = {id};
-            cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, WpTable.COLUMN_TRIP_ID+"=?",fields,null,null,WpTable.COLUMN_SEQUENCE_NUMBER);
+            String filterQuery = "SELECT  * FROM " + WpTable.TABLE_NAME + " WHERE "+WpTable.COLUMN_TRIP_ID
+                                +"='"+id+"' ORDER BY "+WpTable.COLUMN_SEQUENCE_NUMBER+" ASC";
+            Log.d("TBR", "Query: "+filterQuery);
+//             cursor = mDb.rawQuery(filterQuery, new String[] {id});
+             cursor = mDb.rawQuery(filterQuery, null);
         }
 
         while (cursor.moveToNext()) {

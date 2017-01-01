@@ -19,8 +19,6 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
     public static final String ITEM_ID_KEY = "item_id_key";
     public static final String ITEM_KEY = "item_key";
 
-
-
     private List<WpItem> mWpList;
     private Context    mContext;
     private DataSource mDataSource;
@@ -35,7 +33,6 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
         // Get a handle to the database helper and prepare the database
         mDataSource = new DataSource(mContext);
         mDataSource.open();
-
     }
 
 
@@ -95,7 +92,7 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
             tvDate = (TextView) itemView.findViewById(R.id.tripDateText);
 
             itemView.setOnClickListener(this);
-            tvDate.setOnLongClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -115,6 +112,7 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
 
             // First get a copy of the item to be deleted
             WpItem wp= mWpList.get(this.getAdapterPosition());
+            Toast.makeText(mContext, "Long click on "+wp.getWpName(), Toast.LENGTH_SHORT).show();
 
             // Remove from the list and update the listview
             mWpList.remove(this.getAdapterPosition());
