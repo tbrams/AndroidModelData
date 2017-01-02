@@ -93,19 +93,15 @@ public class DataSource {
      * @Returns: none
      */
     public void deleteTrip(TripItem trip) {
-        Log.d("TBR","deleteTrip for "+trip.getTripName());
-        Log.d("TBR","trip id "+trip.getTripId());
         // Get a list of all associated WPs
         List<WpItem> allWps = getAllWps(trip.getTripId());
-        Log.d("TBR","We have #WPs "+allWps.size());
 
-        // delete them all
+        // delete them one by one and do not waste time on re-calculating trip distance
         for (WpItem wp : allWps) {
-            Log.d("TBR","Deleting WP "+wp.getWpName());
-            deleteWp(wp);
+            deleteWp(wp, false);
         }
 
-        // Then delete the trip from the Trip Table
+        // Finally delete the trip from the Trip Table
         mDb.delete(TripTable.TABLE_NAME, TripTable.COLUMN_ID + " = ?",
                 new String[] { trip.getTripId() });
     }
@@ -242,9 +238,30 @@ public class DataSource {
      * @params: wp   - the WpItem to be deleted
      * @Returns: none
      */
-    public void deleteWp(WpItem wp) {
+    public void deleteWp(WpItem wp, boolean updateDistance) {
         mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?",
                 new String[] { wp.getWpId() });
+
+        if (updateDistance) {
+            // update distance in trip record now that one point is gone
+            String filterQuery = "SELECT SUM(wpDistance) AS S FROM wps WHERE WpTripId=?";
+            Log.d("TBR", "Query: " + filterQuery);
+
+            Cursor cursor;
+            cursor = mDb.rawQuery(filterQuery, new String[]{wp.getTripIndex()});
+
+            if (cursor.moveToFirst()) {
+                Double nyDist = Double.parseDouble(cursor.getString(cursor.getColumnIndex("S")));
+                Log.d("TBR", "Ny calc dist: " + nyDist);
+
+                ContentValues value = new ContentValues();
+                value.put(TripTable.COLUMN_DIST, nyDist);
+                mDb.update(TripTable.TABLE_NAME, value, TripTable.COLUMN_ID + " = ?",
+                        new String[]{wp.getTripIndex()});
+            } else {
+                Log.d("TBR", "cursor movetofirst did not succeed");
+            }
+        }
     }
 
 
@@ -307,10 +324,9 @@ public class DataSource {
             cursor = mDb.query(WpTable.TABLE_NAME, WpTable.ALL_COLUMNS, null,null,null,null, WpTable.COLUMN_SEQUENCE_NUMBER);
         } else {
             String filterQuery = "SELECT  * FROM " + WpTable.TABLE_NAME + " WHERE "+WpTable.COLUMN_TRIP_ID
-                                +"='"+id+"' ORDER BY "+WpTable.COLUMN_SEQUENCE_NUMBER+" ASC";
+                                +"=? ORDER BY "+WpTable.COLUMN_SEQUENCE_NUMBER+" ASC";
             Log.d("TBR", "Query: "+filterQuery);
-//             cursor = mDb.rawQuery(filterQuery, new String[] {id});
-             cursor = mDb.rawQuery(filterQuery, null);
+             cursor = mDb.rawQuery(filterQuery, new String[]{id});
         }
 
         while (cursor.moveToNext()) {

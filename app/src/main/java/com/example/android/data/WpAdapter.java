@@ -118,8 +118,8 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
 
             Toast.makeText(mContext, "You deleted "+wp.getWpName(), Toast.LENGTH_SHORT).show();
 
-            // Drop from database
-            mDataSource.deleteWp(wp);
+            // Drop from database and make sure trip distance is updated
+            mDataSource.deleteWp(wp, true);
 
             return false;
         }
