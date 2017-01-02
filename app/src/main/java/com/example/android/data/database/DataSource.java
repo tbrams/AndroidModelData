@@ -80,7 +80,6 @@ public class DataSource {
         ContentValues values = trip.toContentValues();
 
         mDb.insert(TripTable.TABLE_NAME, null, values);
-        Log.i("TBR","Trip created in DB: "+trip.getTripName());
         return trip;
     }
 
@@ -239,16 +238,22 @@ public class DataSource {
      * @Returns: none
      */
     public void deleteWp(WpItem wp, boolean updateDistance) {
-        mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?",
-                new String[] { wp.getWpId() });
 
+        // Re-sequence the subsequent Way points
+        String sql="UPDATE wps SET wpSequenceNumber=wpSequenceNumber-1"
+                  +" WHERE wpSequenceNumber > (SELECT wpSequenceNumber FROM wps WHERE wpId=?)";
+        mDb.execSQL(sql, new String[]{wp.getWpId()});
+
+        // Now delete the way point
+        mDb.delete(WpTable.TABLE_NAME, WpTable.COLUMN_ID + " = ?", new String[]{wp.getWpId() });
+
+        // And finally update the distance of the associated trip if requested
         if (updateDistance) {
-            // update distance in trip record now that one point is gone
-            String filterQuery = "SELECT SUM(wpDistance) AS S FROM wps WHERE WpTripId=?";
-            Log.d("TBR", "Query: " + filterQuery);
+
+            String query = "SELECT SUM(wpDistance) AS S FROM wps WHERE WpTripId=?";
 
             Cursor cursor;
-            cursor = mDb.rawQuery(filterQuery, new String[]{wp.getTripIndex()});
+            cursor = mDb.rawQuery(query, new String[]{wp.getTripIndex()});
 
             if (cursor.moveToFirst()) {
                 String distString = cursor.getString(cursor.getColumnIndex("S"));
@@ -257,15 +262,15 @@ public class DataSource {
                 if (distString != null) {
                     nyDist = Double.parseDouble(distString);
                 }
-                Log.d("TBR", "Ny calc dist: " + nyDist);
 
                 ContentValues value = new ContentValues();
                 value.put(TripTable.COLUMN_DIST, nyDist);
                 mDb.update(TripTable.TABLE_NAME, value, TripTable.COLUMN_ID + " = ?",
                         new String[]{wp.getTripIndex()});
             } else {
-                Log.e("TBR", "cursor movetofirst did not succeed");
+                Log.e("TBR", "cursor.moveToFirst() failed in deleteWp");
             }
+            cursor.close();
         }
     }
 

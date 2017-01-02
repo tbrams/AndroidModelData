@@ -3,6 +3,7 @@ package com.example.android.data;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +121,12 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
 
             // Drop from database and make sure trip distance is updated
             mDataSource.deleteWp(wp, true);
+
+            // DEBUG
+            List<WpItem> tempList=mDataSource.getAllWps(wp.getTripIndex());
+            for (WpItem w:tempList) {
+                Log.i("TBR","WP "+w.getWpName()+" #"+w.getWpSequenceNumber());
+            }
 
             return false;
         }
