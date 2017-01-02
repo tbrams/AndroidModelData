@@ -87,7 +87,7 @@ public class DataSource {
     /*
      * deleteTrip
      * This function will erase a trip from the Trip table and
-     * also the associated waypoints from the WP table
+     * also the associated way points from the WP table
      *
      * @params: id  - Trip Id
      * @Returns: none

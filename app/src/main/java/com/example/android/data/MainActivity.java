@@ -1,21 +1,33 @@
 package com.example.android.data;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.data.database.DataSource;
+import com.example.android.data.model.JSONHelper;
 import com.example.android.data.model.SampleDataProvider;
 import com.example.android.data.model.TripItem;
 import com.example.android.data.model.WpItem;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG = MainActivity.class.getName();
+    private static final int REQUEST_PERMISSION_WRITE = 101;
+    public static final String FILE_NAME = "mydata.txt";
 
     List<String>        mTripList = SampleDataProvider.sTrips;
     List<List<WpItem>>  mWpList = SampleDataProvider.sWpListsForTrips;
@@ -24,12 +36,23 @@ public class MainActivity extends AppCompatActivity {
     List<TripItem>  mListFromDB;
     RecyclerView    mRecyclerView;
     TripAdapter     mTripAdapter;
+    private boolean mPermissionGranted;
 
 
+    private File getFile() {
+        return new File(
+                Environment.getExternalStorageDirectory(), FILE_NAME);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Need this for import/export
+        if (!mPermissionGranted) {
+            mPermissionGranted=checkPermissions();
+        }
+
 
         // Get a handle to the database helper and prepare the database
         mDataSource = new DataSource(this);
@@ -103,15 +126,81 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(settingsIntent);
                 return true;
 
-            case R.id.action_clear_db:
-                mDataSource.resetDB();
-                populateDatabase();
+            case R.id.action_import:
+                List<TripItem> dataItems = JSONHelper.importFromJSON(this);
+                if (dataItems != null) {
+                    for (TripItem trip: dataItems) {
+                        Log.i("TBR", "Trip restored: " + trip.getTripName());
+                    }
+                }
                 return true;
 
-            case R.id.action_load_db:
+            case R.id.action_export:
+                boolean result = JSONHelper.exportToJSON(this, mListFromDB);
+                if (result) {
+                    Toast.makeText(this, "Data Exported", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Export failed", Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        return (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state));
+    }
+
+    // Initiate request for permissions.
+    private boolean checkPermissions() {
+        Log.d("TBR", "CheckPermissions");
+
+        if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
+            Toast.makeText(this, "This app only works on devices with usable external storage",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_PERMISSION_WRITE);
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // Handle permissions result
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_WRITE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mPermissionGranted = true;
+                    Toast.makeText(this, "External storage permission granted",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "You must grant permission!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
 

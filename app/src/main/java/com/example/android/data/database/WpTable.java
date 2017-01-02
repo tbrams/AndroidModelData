@@ -28,5 +28,5 @@ public class WpTable {
                     COLUMN_SEQUENCE_NUMBER + " INTEGER" + ");";
 
     public static final String SQL_DELETE =
-            "DROP TABLE " + TABLE_NAME;
+            "DROP TABLE IF EXISTS " + TABLE_NAME;
 }

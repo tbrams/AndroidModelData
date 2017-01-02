@@ -5,10 +5,10 @@
         android:id="@+id/action_settings"
         android:title="@string/settings"
         />
-    <item android:id="@+id/action_clear_db"
-        android:title="@string/clearDb"
+    <item android:id="@+id/action_export"
+        android:title="Export"
         />
-    <item android:id="@+id/action_load_db"
-        android:title="@string/seedDb"
+    <item android:id="@+id/action_import"
+        android:title="Import"
         />
 </menu>

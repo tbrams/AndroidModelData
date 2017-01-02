@@ -82,8 +82,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
 
 
     /*
-     * Get handle to fields for display and the layout view because
-     * We might need to alternate the background color
+     * Get handle to fields for display
      */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
