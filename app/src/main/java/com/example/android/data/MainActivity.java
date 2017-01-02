@@ -21,7 +21,6 @@ import com.example.android.data.model.SampleDataProvider;
 import com.example.android.data.model.TripItem;
 import com.example.android.data.model.WpItem;
 
-import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_WRITE = 101;
     public static final String FILE_NAME = "mydata.txt";
 
-    List<String>        mTripList = SampleDataProvider.sTrips;
-    List<List<WpItem>>  mWpList = SampleDataProvider.sWpListsForTrips;
+    List<String>       mTripSampleList = SampleDataProvider.sTrips;
+    List<List<WpItem>> mWpSampleList   = SampleDataProvider.sWpListsForTrips;
 
     DataSource      mDataSource;
     List<TripItem>  mListFromDB;
@@ -39,10 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean mPermissionGranted;
 
 
-    private File getFile() {
-        return new File(
-                Environment.getExternalStorageDirectory(), FILE_NAME);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,28 +53,28 @@ public class MainActivity extends AppCompatActivity {
         mDataSource = new DataSource(this);
         mDataSource.open();
 
-        populateDatabase();
-
-
         // Get a reference to the layout for the recyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
 
+        // Display info on trips available in the database
         displayTrips(null);
 
     }
 
 
     private void populateDatabase() {
-        if (mDataSource.getTripCount()==0) {
-            // Initialize database tables
-            for (int i = 0; i < mTripList.size(); i++) {
-                String tripName = mTripList.get(i);
-                List<WpItem> wpList = mWpList.get(i);
+        // Delete and recreate both tables
+        mDataSource.resetDB();
+
+        for (int i = 0; i < mTripSampleList.size(); i++) {
+                String tripName = mTripSampleList.get(i);
+                List<WpItem> wpList = mWpSampleList.get(i);
 
                 mDataSource.addFullTrip(tripName, wpList);
             }
-        }
     }
+
+
 
     /*
      * displayTrips
@@ -127,22 +122,47 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_import:
-                List<TripItem> dataItems = JSONHelper.importFromJSON(this);
-                if (dataItems != null) {
-                    for (TripItem trip: dataItems) {
-                        Log.i("TBR", "Trip restored: " + trip.getTripName());
-                    }
-                }
+                // First flush the tables
+                mDataSource.resetDB();
+
+                // then get the items from the imported trips and save in DB
+                List<TripItem> tripItems = JSONHelper.importTripsFromJSON(this);
+                mDataSource.seedTripTable(tripItems);
+                Log.i("TBR", "Restored Trip Data written to DB");
+
+                // Update list display
+                displayTrips(null);
+
+                List<WpItem> wpItems = JSONHelper.importWpsFromJSON(this);
+                mDataSource.seedWpTable(wpItems);
+                Log.i("TBR", "Restored Wp Data written to DB");
+
                 return true;
 
             case R.id.action_export:
-                boolean result = JSONHelper.exportToJSON(this, mListFromDB);
-                if (result) {
-                    Toast.makeText(this, "Data Exported", Toast.LENGTH_SHORT).show();
+
+                // Get all WPs from database for export
+                List<WpItem> wps = mDataSource.getAllWps(null);
+                if (JSONHelper.exportWpsToJSON(this, wps)) {
+                    Log.i("TBR", "WP data exported");
                 } else {
-                    Toast.makeText(this, "Export failed", Toast.LENGTH_SHORT).show();
+                    Log.e("TBR", "WP data export failed");
+                }
+
+
+                if (JSONHelper.exportTripsToJSON(this, mListFromDB)) {
+                    Log.i("TBR", "Trips data exported");
+                } else {
+                    Log.e("TBR", "Trips data export failed");
                 }
                 return true;
+
+
+            case R.id.action_reset:
+                // Clean DB and load test data
+                populateDatabase();
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

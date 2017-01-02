@@ -80,6 +80,7 @@ public class DataSource {
         ContentValues values = trip.toContentValues();
 
         mDb.insert(TripTable.TABLE_NAME, null, values);
+        Log.i("TBR","Trip created in DB: "+trip.getTripName());
         return trip;
     }
 
@@ -133,12 +134,11 @@ public class DataSource {
      *
      */
     public void seedTripTable(List<TripItem> tripList) {
-        long numDataItems = getTripCount();
-        if (numDataItems==0) {
-            for (TripItem trip :
-                    tripList) {
+        if (tripList.size()>0) {
+            for (TripItem trip : tripList) {
                 try {
                     createTrip(trip);
+
                 } catch (SQLiteException e) {
                     e.printStackTrace();
                 }
@@ -251,7 +251,12 @@ public class DataSource {
             cursor = mDb.rawQuery(filterQuery, new String[]{wp.getTripIndex()});
 
             if (cursor.moveToFirst()) {
-                Double nyDist = Double.parseDouble(cursor.getString(cursor.getColumnIndex("S")));
+                String distString = cursor.getString(cursor.getColumnIndex("S"));
+                Double nyDist=null;
+
+                if (distString != null) {
+                    nyDist = Double.parseDouble(distString);
+                }
                 Log.d("TBR", "Ny calc dist: " + nyDist);
 
                 ContentValues value = new ContentValues();
@@ -259,7 +264,7 @@ public class DataSource {
                 mDb.update(TripTable.TABLE_NAME, value, TripTable.COLUMN_ID + " = ?",
                         new String[]{wp.getTripIndex()});
             } else {
-                Log.d("TBR", "cursor movetofirst did not succeed");
+                Log.e("TBR", "cursor movetofirst did not succeed");
             }
         }
     }
@@ -289,11 +294,8 @@ public class DataSource {
      *
      */
     public void seedWpTable(List<WpItem> wpList) {
-        long numDataItems = getWpCount();
-
-        if (numDataItems==0) {
-            for (WpItem wp :
-                    wpList) {
+         if (wpList.size()>0) {
+            for (WpItem wp : wpList) {
                 try {
                     createWp(wp);
                 } catch (SQLiteException e) {
