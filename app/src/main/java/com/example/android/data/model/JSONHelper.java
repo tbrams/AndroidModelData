@@ -28,8 +28,10 @@ public class JSONHelper {
         Log.i("TBR", "exportToJSON " + jsonString);
 
         FileOutputStream fileOutputStream = null;
+        File file=new File(Environment.getExternalStorageDirectory(), FILE_NAME);
+
         try {
-            File file=new File(Environment.getExternalStorageDirectory(), FILE_NAME);
+            fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(jsonString.getBytes());
             return true;
         } catch (IOException e) {
