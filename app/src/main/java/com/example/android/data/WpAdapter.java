@@ -3,7 +3,6 @@ package com.example.android.data;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +62,11 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        holder.tvName.setText(mWpList.get(position).getWpName());
+        WpItem wp = mWpList.get(position);
+        holder.tvName.setText(wp.getWpName());
+        holder.tvDist.setText(String.format("%.2f nm", wp.getWpDistance()));
+        holder.tvDate.setText(String.format("#%d", wp.getWpSequenceNumber()));
+
         if (position % 2 == 1) {
             holder.itemView.setBackgroundColor(Color.LTGRAY);
         } else {
@@ -113,20 +116,16 @@ public class WpAdapter extends RecyclerView.Adapter<WpAdapter.ViewHolder>  {
             // First get a copy of the item to be deleted
             WpItem wp= mWpList.get(this.getAdapterPosition());
 
-            // Remove from the list and update the listview
-            mWpList.remove(this.getAdapterPosition());
-            notifyDataSetChanged();
-
-            Toast.makeText(mContext, "You deleted "+wp.getWpName(), Toast.LENGTH_SHORT).show();
-
             // Drop from database and make sure trip distance is updated
             mDataSource.deleteWp(wp, true);
+            Toast.makeText(mContext, "You deleted "+wp.getWpName(), Toast.LENGTH_SHORT).show();
 
-            // DEBUG
-            List<WpItem> tempList=mDataSource.getAllWps(wp.getTripIndex());
-            for (WpItem w:tempList) {
-                Log.i("TBR","WP "+w.getWpName()+" #"+w.getWpSequenceNumber());
-            }
+
+            List<WpItem> newList = mDataSource.getAllWps(wp.getTripIndex());
+            mWpList = newList;
+
+            // Update display
+            notifyDataSetChanged();
 
             return false;
         }

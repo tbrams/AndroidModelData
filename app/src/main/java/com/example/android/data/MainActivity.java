@@ -161,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_reset:
                 // Clean DB and load test data
                 populateDatabase();
+
+                // Update list display
+                displayTrips(null);
+
                 return true;
 
         }
