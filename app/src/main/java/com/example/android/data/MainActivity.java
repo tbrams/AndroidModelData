@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if (JSONHelper.exportTripsToJSON(this, mListFromDB)) {
-                    Log.i("TBR", "Trips data exported");
+                    Toast.makeText(this, "Database Exported", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e("TBR", "Trips data export failed");
                 }
